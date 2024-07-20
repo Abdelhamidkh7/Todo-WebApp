@@ -1,4 +1,4 @@
-package com.in28minutes.springboot.myfirstwebapp.hello;
+package com.myspringproject.springboot.myfirstwebapp.hello;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
