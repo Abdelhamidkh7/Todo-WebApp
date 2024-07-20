@@ -3,6 +3,8 @@ package com.in28minutes.springboot.myfirstwebapp.todo;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -30,14 +32,22 @@ public class TodoController {
 
     @RequestMapping("list-todos")
     public String ListAllTodos(ModelMap model){
-        List<Todo>  todos = todoService.findbyUsername("Abed");
+        String username = getLoggedInUsername(model);
+        List<Todo>  todos = todoService.findbyUsername(username);
         model.put("Todo", todos);
         return "listTodos";
     }
 
+
+    private String getLoggedInUsername(ModelMap model) {
+        
+         Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+      return authentication.getName();
+    }
+
     @RequestMapping(value ="add-todo",method=RequestMethod.GET)
     public String showTodoPage(ModelMap model){
-        Todo todo = new Todo(0, (String)model.get("name"), "", LocalDate.now().plusYears(1), false);
+        Todo todo = new Todo(0, getLoggedInUsername(model), "", LocalDate.now().plusYears(1), false);
         model.put("todo",todo);
         //List<Todo>  todos = todoService.findbyUsername("Abed");
         
@@ -50,7 +60,7 @@ public class TodoController {
         if(result.hasErrors()){
             return "todo";
         }
-        todoService.addTodo((String)model.get("name"), todo.getDescription(), todo.getTargetDate(), false);
+        todoService.addTodo(getLoggedInUsername(model), todo.getDescription(), todo.getTargetDate(), false);
         
         //List<Todo>  todos = todoService.findbyUsername("Abed");
         
@@ -76,7 +86,7 @@ public class TodoController {
 if(result.hasErrors()){
     return "todo";
 }
-String username = (String)model.get("name");
+String username = getLoggedInUsername(model);
 todo.setUsername(username);
 
        
